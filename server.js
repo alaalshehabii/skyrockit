@@ -15,6 +15,11 @@ const passUserToView = require("./middleware/pass-user-to-view.js");
 
 // Controllers
 const authController = require('./controllers/auth.js');
+// server.js
+
+const applicationsController = require('./controllers/applications.js');
+
+
 
 // Set the port from environment variable or default to 3000
 const port = process.env.PORT ? process.env.PORT : '3000';
@@ -46,17 +51,28 @@ app.use(
 app.use(passUserToView);
 
 // PUBLIC
+// server.js
+
 app.get('/', (req, res) => {
-  res.render('index.ejs');
+  // Check if the user is signed in
+  if (req.session.user) {
+    // Redirect signed-in users to their applications index
+    res.redirect(`/users/${req.session.user._id}/applications`);
+  } else {
+    // Show the homepage for users who are not signed in
+    res.render('index.ejs');
+  }
 });
 
 app.use('/auth', authController);
 
+app.use(isSignedIn);
+app.use('/users/:userId/applications', applicationsController); // New!
+
+
 // PROTECTED
 
-app.get("/vip-lounge", isSignedIn, (req, res) => {
-    res.send(`Welcome to the party ${req.session.user.username}.`);
-});
+
 
 app.listen(port, () => {
   console.log(`The express app is ready on port ${port}!`);
