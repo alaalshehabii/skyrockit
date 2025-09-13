@@ -33,7 +33,7 @@
       value="<%= application.postingLink %>"
     >
     <label for="status">Status:</label>
-    <select id="status" name="status">
+    <select id="status" name="status" required>
       <option
         value="interested"
         <%= application.status === "interested" ? "selected" : "" %>
